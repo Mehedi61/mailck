@@ -7,7 +7,20 @@ import (
 	"net/smtp"
 	"regexp"
 	"strings"
+	"github.com/pkg/errors"
+	"golang.org/x/net/proxy"
 )
+
+type SocksSMTP struct {
+	ProxyUserName string
+	ProxyPassword string
+	ProxyAddress  string
+
+	Address  string
+	UserName string
+	Password string
+}
+
 
 var emailRexp = regexp.MustCompile("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}$")
 
@@ -72,23 +85,66 @@ type checkRv struct {
 
 func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*net.MX, port int) (result Result, err error) {
 	// try to connect to one mx
+
 	var c *smtp.Client
+
+	// commented for testing
+	// for _, mx := range mxList {
+	// 	var conn net.Conn
+	// 	conn, err = defaultDialer.DialContext(ctx, "tcp", fmt.Sprintf("%v:%v", mx.Host, port))
+	// 	if t, ok := err.(*net.OpError); ok {
+	// 		if t.Timeout() {
+	// 			return TimeoutError, err
+	// 		}
+	// 		return NetworkError, err
+	// 	} else if err != nil {
+	// 		return MailserverError, err
+	// 	}
+	// 	c, err = smtp.NewClient(conn, mx.Host)
+	// 	if err == nil {
+	// 		break
+	// 	}
+	// }
+
+
+	// proxy testing
+
 	for _, mx := range mxList {
 		var conn net.Conn
-		conn, err = defaultDialer.DialContext(ctx, "tcp", fmt.Sprintf("%v:%v", mx.Host, port))
-		if t, ok := err.(*net.OpError); ok {
-			if t.Timeout() {
-				return TimeoutError, err
+
+		var s = SocksSMTP{}
+
+		var auth *proxy.Auth
+
+		if s.ProxyUserName != "" {
+			auth = &proxy.Auth{
+				User:     s.ProxyUserName,
+				Password: s.ProxyPassword,
 			}
-			return NetworkError, err
-		} else if err != nil {
-			return MailserverError, err
 		}
-		c, err = smtp.NewClient(conn, mx.Host)
+
+		dialer, err := proxy.SOCKS5("tcp", "206.253.164.122", auth, proxy.Direct)
+
+		if err != nil {
+			return nil, errors.Wrap(err, "Create SOCKS5")
+		}
+
+		conn, err := dialer.Dial("tcp", "206.253.164.122") // mx.host
+
+		if err != nil {
+			return nil, errors.Wrap(err, "Dial")
+		}
+
+		host, _, _ := net.SplitHostPort(mx.Host, mx.port)
+		c, err := smtp.NewClient(conn, host)
+
 		if err == nil {
 			break
 		}
 	}
+
+
+
 	if err != nil {
 		return MailserverError, err
 	}
