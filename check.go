@@ -126,7 +126,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		dialer, err := proxy.SOCKS5("tcp", "206.253.164.122", auth, proxy.Direct)
 
 		if err != nil {
-			return errors.Wrap(result, err, "Create SOCKS5")	// test
+			return result, errors.Wrap(err, "Create SOCKS5")	// test
 			// return nil, errors.Wrap(err, "Create SOCKS5")
 		}
 
@@ -134,7 +134,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		// conn, err := dialer.Dial("tcp", "206.253.164.122") // mx.host
 
 		if err != nil {
-			return errors.Wrap(result, err, "Dial")	// test
+			return result, errors.Wrap(err, "Dial")	// test
 			// return nil, errors.Wrap(err, "Dial")
 		}
 
