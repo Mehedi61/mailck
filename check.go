@@ -138,7 +138,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 			// return nil, errors.Wrap(err, "Dial")
 		}
 
-		host, _, _ := net.SplitHostPort(mx.Host)	// test
+		host, _, _ := net.SplitHostPort("https://app.mailclarify.com/test.php")	// test
 		// host, _, _ := net.SplitHostPort(mx.Host, mx.port)
 		c, err := smtp.NewClient(conn, host)
 
