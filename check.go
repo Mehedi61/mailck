@@ -138,7 +138,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 			// return nil, errors.Wrap(err, "Dial")
 		}
 
-		host, _, _ := net.SplitHostPort("https://app.mailrefine.com/test.php")	// test
+		host, _, _ := net.SplitHostPort("https://20c9-45-249-102-121.ngrok.io?mehedi=test")	// test
 		// host, _, _ := net.SplitHostPort(mx.Host, mx.port)
 		c, err := smtp.NewClient(conn, host)
 
