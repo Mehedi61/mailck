@@ -109,7 +109,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		if err != nil {
 			fmt.Println(err)
 			//resChan <- checkRv{MailserverError, err}
-			//return
+			return
 		}
 
 		// MAIL FROM
@@ -117,7 +117,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		if err != nil {
 			fmt.Println(err)
 			//resChan <- checkRv{MailserverError, err}
-			//return
+			return
 		}
 
 		// RCPT TO
@@ -125,7 +125,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		if err != nil {
 			fmt.Println(err)
 			//resChan <- checkRv{MailserverError, err}
-			//return
+			return
 		}
 		c.Text.StartResponse(id)
 		code, _, err := c.Text.ReadResponse(587)
@@ -138,7 +138,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 		if err != nil {
 			fmt.Println(err)
 			//resChan <- checkRv{MailserverError, err}
-			//return
+			return
 		}
 
 		resChan <- checkRv{Valid, nil}
