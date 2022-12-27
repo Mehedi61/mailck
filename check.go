@@ -53,7 +53,7 @@ func CheckMailbox(fromEmail, checkEmail string) (result Result, err error) {
 	if err != nil || len(mxList) == 0 {
 		return InvalidDomain, nil
 	}
-	return checkMailbox(noContext, fromEmail, checkEmail, mxList, 587)
+	return checkMailbox(noContext, fromEmail, checkEmail, mxList, 25)
 }
 
 func CheckMailboxWithContext(ctx context.Context, fromEmail, checkEmail string) (result Result, err error) {
@@ -62,7 +62,7 @@ func CheckMailboxWithContext(ctx context.Context, fromEmail, checkEmail string) 
 	if err != nil || len(mxList) == 0 {
 		return InvalidDomain, nil
 	}
-	return checkMailbox(ctx, fromEmail, checkEmail, mxList, 587)
+	return checkMailbox(ctx, fromEmail, checkEmail, mxList, 25)
 }
 
 type checkRv struct {
@@ -125,7 +125,7 @@ func checkMailbox(ctx context.Context, fromEmail, checkEmail string, mxList []*n
 			return
 		}
 		c.Text.StartResponse(id)
-		code, _, err := c.Text.ReadResponse(587)
+		code, _, err := c.Text.ReadResponse(25)
 		c.Text.EndResponse(id)
 		if code == 550 {
 			resChan <- checkRv{MailboxUnavailable, nil}
